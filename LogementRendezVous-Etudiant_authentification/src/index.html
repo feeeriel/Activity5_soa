@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Tester Service Logement (client REST)</title>
+    <script type="text/javascript">
+        var xmlhttp;
+
+        // Initialisation de l'objet XMLHttpRequest
+        function init() {
+            xmlhttp = new XMLHttpRequest();
+        }
+
+        // Fonction pour récupérer les détails des logements d'une délégation
+        function getDetails() {
+            var delegation = document.getElementById("delegation").value;
+            var url = "http://localhost:8050/LogementRendezVous_Etudiant_war_exploded/rest/logements?delegation=" + delegation;
+
+            // Préparation de la requête GET
+            xmlhttp.open('GET', url, true);
+            xmlhttp.send(null);
+
+            // Gérer la réponse lorsque la requête est terminée
+            xmlhttp.onreadystatechange = function () {
+                var reference = document.getElementById("reference");
+                var adresse = document.getElementById("adresse");
+                var gouvernorat = document.getElementById("gouvernorat");
+
+                if (xmlhttp.readyState == 4) {
+                    if (xmlhttp.status == 200) {
+                        var resultat = JSON.parse(xmlhttp.responseText);
+                        reference.value = "";
+                        adresse.value = "";
+                        gouvernorat.value = "";
+
+                        for (var i in resultat) {
+                            reference.value += resultat[i].reference + " ";
+                            adresse.value += resultat[i].adresse + "\n";
+                            gouvernorat.value += resultat[i].gouvernorat + " ";
+                        }
+                    } else {
+                        alert("Erreur lors de la récupération des données : " + xmlhttp.statusText);
+                    }
+                }
+            };
+        }
+    </script>
+</head>
+<body onload="init()">
+<h1>Tester Service Logement (client REST)</h1>
+<table>
+    <tr>
+        <td>Saisir Délégation : </td>
+        <td>
+            <input type="text" id="delegation" size="10" />
+            <input type="button" value="OK" onclick="getDetails()" />
+        </td>
+    </tr>
+    <tr>
+        <td>Référence : </td>
+        <td><input type="text" readonly="true" id="reference" /></td>
+    </tr>
+    <tr>
+        <td>Adresse : </td>
+        <td><textarea id="adresse"></textarea></td>
+    </tr>
+    <tr>
+        <td>Gouvernorat : </td>
+        <td><input type="text" readonly="true" id="gouvernorat" /></td>
+    </tr>
+</table>
+</body>
+</html>
